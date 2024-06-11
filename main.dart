@@ -14,7 +14,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Lista de Pessoas',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        fontFamily: 'Montserrat',
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: Colors.green,
+        ).copyWith(
+          secondary: Colors.greenAccent,
+        ),
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: PessoaLista(),
     );
@@ -53,72 +59,115 @@ class _PessoaListaState extends State<PessoaLista> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Lista de Pessoas'),
+        backgroundColor: Colors.green[100],
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                TextField(
-                  controller: _nomeController,
-                  decoration: InputDecoration(labelText: 'Nome'),
-                ),
-                TextField(
-                  controller: _idadeController,
-                  decoration: InputDecoration(labelText: 'Idade'),
-                ),
-                TextField(
-                  controller: _estadoCivilController,
-                  decoration: InputDecoration(labelText: 'Estado Civil'),
-                ),
-                ElevatedButton(
-                  child: Text('Adicionar'),
-                  onPressed: () => _adicionarPessoa(
-                    _nomeController.text,
-                    _idadeController.text,
-                    _estadoCivilController.text,
-                  ),
-                ),
-              ],
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            const Text(
+              'Adicionar Nova Pessoa',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
-          ),
-          Expanded(
-            child: StreamBuilder(
-              stream: FirebaseFirestore.instance.collection('pessoas').snapshots(),
-              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                }
-
-                if (snapshot.hasError) {
-                  return Center(child: Text('Erro: ${snapshot.error}'));
-                }
-
-                final pessoas = snapshot.data?.docs ?? [];
-
-                return ListView.builder(
-                  itemCount: pessoas.length,
-                  itemBuilder: (context, index) {
-                    final pessoa = pessoas[index];
-                    final nome = pessoa['nome'];
-                    final idade = pessoa['idade'];
-                    final estadoCivil = pessoa['estadoCivil'];
-                    final id = pessoa.id;
-
-                    return ListTile(
-                      title: Text('$nome, $idade anos, $estadoCivil'),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () => _removerPessoa(id),
-                      ),
-                    );
-                  },
-                );
-              },
+            SizedBox(height: 8),
+            TextField(
+              controller: _nomeController,
+              decoration: InputDecoration(
+                labelText: 'Nome',
+                border: OutlineInputBorder(),
+                fillColor: Colors.green[50],
+                filled: true,
+              ),
             ),
-          ),
-        ],
+            SizedBox(height: 8),
+            TextField(
+              controller: _idadeController,
+              decoration: InputDecoration(
+                labelText: 'Idade',
+                border: OutlineInputBorder(),
+                fillColor: Colors.green[50],
+                filled: true,
+              ),
+              keyboardType: TextInputType.number,
+            ),
+            SizedBox(height: 8),
+            TextField(
+              controller: _estadoCivilController,
+              decoration: InputDecoration(
+                labelText: 'Estado Civil',
+                border: OutlineInputBorder(),
+                fillColor: Colors.green[50],
+                filled: true,
+              ),
+            ),
+            SizedBox(height: 8),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.black,
+                backgroundColor: Colors.green[200],
+                side: BorderSide(color: Colors.green, width: 2.0), // Adiciona a borda ao botão
+              ),
+              child: Text('Adicionar'),
+              onPressed: () => _adicionarPessoa(
+                _nomeController.text,
+                _idadeController.text,
+                _estadoCivilController.text,
+              ),
+            ),
+            SizedBox(height: 16),
+            Expanded(
+              child: StreamBuilder(
+                stream: FirebaseFirestore.instance.collection('pessoas').snapshots(),
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Erro: ${snapshot.error}'));
+                  }
+
+                  final pessoas = snapshot.data?.docs ?? [];
+
+                  return ListView.builder(
+                    itemCount: pessoas.length,
+                    itemBuilder: (context, index) {
+                      final pessoa = pessoas[index];
+                      final nome = pessoa['nome'];
+                      final idade = pessoa['idade'];
+                      final estadoCivil = pessoa['estadoCivil'];
+                      final id = pessoa.id;
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        child: Card(
+                          color: Colors.green[50],
+                          child: ListTile(
+                            title: Text(
+                              '$nome, $idade anos, $estadoCivil',
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.normal, // Ajusta para uma fonte mais fina
+                              ),
+                            ),
+                            trailing: IconButton(
+                              icon: Icon(Icons.delete, color: Colors.green[300]),
+                              onPressed: () => _removerPessoa(id),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
