@@ -7,5 +7,6 @@ https://github.com/LeonardoDanna/TestandoFirebase/assets/36389555/1d765c5b-fce7-
 
 
 
-• Criação de aplicações Flutter utilizando Firebase.
-• Uso de Fontes
+- Criação de aplicação Flutter utilizando Firebase.
+- Versionamento de código com Git
+- Uso de arquivos externos na aplicação
